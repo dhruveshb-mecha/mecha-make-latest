@@ -55,7 +55,7 @@ def main [machine: string,build_dir: string] {
     # Collect artifact
     collect_artifact
 
-    log_info "Kernel build script completed successfully"
+    log_info "Kernel build script completed successfully for rev4"
 }
 
 # Build Kernel
