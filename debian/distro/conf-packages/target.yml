@@ -59,7 +59,7 @@ package_groups:
       - xwayland
       - xorg
       # - meta-utils
-      - sway
+      - labwc
       - weston
   - name: greeter
     packages:
@@ -75,4 +75,9 @@ package_groups:
       - libasound2-plugins
   - name: mechanix
     packages:
-      - mechanix-status-bar
+      - mechanix-launcher
+      - mechanix-keyboard
+      - mechanix_desktop_dbus_server
+      - mechanix_system_dbus_server
+
+

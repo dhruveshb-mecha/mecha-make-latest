@@ -80,12 +80,11 @@ export def configure_greeter [] {
   # CHROOT usermod -aG render greeter
   # CHROOT usermod -d /usr/greeter greeter
 
-  let config_append = "
-  # Performs auto login for default user
+  let config_append = "\n" + ("# Performs auto login for default user
+
   [initial_session]
-  command = \"sway\"
-  user = \"mecha\"
-  "
+  command = \"labwc\"
+  user = \"mecha\"" | str trim)
 
   let greetd_config_path = $rootfs_dir + "/etc/greetd/config.toml"
   echo $config_append | sudo tee -a $greetd_config_path
@@ -161,4 +160,43 @@ export def enable_watchdog_timer [rootfs_dir: string] {
 
   SUDO mv $tmp_watchdog_conf $watchdog_conf_path
 
+}
+
+
+export def configure_mechanix_system_dbus [] {
+  log_info "Configuring mechanix system dbus service:"
+  let rootfs_dir = $env.ROOTFS_DIR
+
+  let service_content = "[Unit]
+Description=Mechanix Services (zbus)
+After=systemd-user-sessions.service
+DefaultDependencies=no
+
+[Service]
+User=root
+Type=exec
+ExecStart=sudo /usr/bin/mechanix_system_dbus_server -c /etc/mechanix-gui/server/system/services-config.yml
+Restart=always
+RestartSec=2s
+
+[Install]
+WantedBy=sysinit.target"
+
+  let service_dir = $rootfs_dir + "/lib/systemd/system"
+  let service_dest = $service_dir + "/mechanix-system-dbus.service"
+
+  # Create directory if it doesn't exist
+  if not ($service_dir | path exists) {
+    log_debug $"Creating directory: ($service_dir)"
+    SUDO mkdir -p $service_dir
+  }
+
+  # Write service file directly using sudo tee
+  echo $service_content | sudo tee $service_dest
+
+  # Enable the service using chroot
+  alias CHROOT = sudo chroot $rootfs_dir
+  CHROOT systemctl enable mechanix-system-dbus.service
+
+  log_debug "Mechanix system dbus service configured successfully."
 }

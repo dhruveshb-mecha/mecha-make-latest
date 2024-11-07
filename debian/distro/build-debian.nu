@@ -109,6 +109,8 @@ configure_default_user
 
 configure_greeter
 
+configure_mechanix_system_dbus 
+
 configure_sys_files
 
   # Stage4: Cleanup
