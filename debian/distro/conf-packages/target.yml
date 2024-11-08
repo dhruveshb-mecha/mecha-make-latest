@@ -59,6 +59,7 @@ package_groups:
       - xwayland
       - xorg
       # - meta-utils
+      - libwlroots12t64
       - labwc
       - weston
   - name: greeter
