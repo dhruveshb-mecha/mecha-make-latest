@@ -82,9 +82,9 @@ export def configure_greeter [] {
 
   let config_append = "\n" + ("# Performs auto login for default user
 
-  [initial_session]
-  command = \"labwc\"
-  user = \"mecha\"" | str trim)
+[initial_session]
+command = \"labwc\"
+user = \"mecha\"" | str trim) + "\n"
 
   let greetd_config_path = $rootfs_dir + "/etc/greetd/config.toml"
   echo $config_append | sudo tee -a $greetd_config_path
