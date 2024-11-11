@@ -200,3 +200,36 @@ WantedBy=sysinit.target"
 
   log_debug "Mechanix system dbus service configured successfully."
 }
+
+export def configure_labwc_auto_launch [] {
+    log_info "Configuring labwc autostart:"
+    let rootfs_dir = $env.ROOTFS_DIR
+    
+    # Define the config directory relative to rootfs
+    let config_dir = $"($rootfs_dir)/home/mecha/.config/labwc"
+    let autostart_file = $"($config_dir)/autostart"
+    
+    # Create the config directory if it doesn't exist
+    if not ($config_dir | path exists) {
+        log_debug $"Creating directory: ($config_dir)"
+        SUDO mkdir -p $config_dir
+    }
+    
+    # Define the autostart content
+    let autostart_content = "mechanix-launcher -s /etc/mechanix/shell/launcher/settings.yml &
+mechanix_desktop_dbus_server -s /etc/mechanix-gui/server/desktop/settings.yml &
+mechanix-keyboard -s /etc/mechanix/shell/keyboard/settings.yml &"
+    
+    # Check if autostart file exists
+    if not ($autostart_file | path exists) {
+        log_debug $"Creating autostart file: ($autostart_file)"
+        echo $autostart_content | SUDO tee $autostart_file
+        
+        # Set proper permissions
+        SUDO chmod 644 $autostart_file
+    } else {
+        log_debug $"Autostart file already exists at ($autostart_file)"
+    }
+    
+    log_info "Labwc autostart configuration completed."
+}

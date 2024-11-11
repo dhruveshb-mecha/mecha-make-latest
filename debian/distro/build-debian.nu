@@ -111,6 +111,8 @@ configure_greeter
 
 configure_mechanix_system_dbus 
 
+configure_labwc_auto_launch
+
 configure_sys_files
 
   # Stage4: Cleanup
