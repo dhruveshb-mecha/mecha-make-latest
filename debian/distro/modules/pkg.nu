@@ -20,8 +20,6 @@ def install_package [name: string, url: string, sha] {
 
     log_debug $"Package ($name) is installed"
 
-    # TODO: Verify SHA
-    # TODO: avoid redownload, if file exists + SHA matched
 }
 
 export def install_host_packages [] {

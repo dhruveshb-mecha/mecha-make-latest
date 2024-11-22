@@ -7,13 +7,6 @@ alias SUDO = sudo
 export def configure_networking [] {
     log_info "Configuring networking:"
     let rootfs_dir = $env.ROOTFS_DIR
-    alias CHROOT = sudo chroot $rootfs_dir
-  
-    
-    # Backup the existing resolv.conf, hosts
-#    CHROOT cp $"($rootfs_dir)/etc/environment" $"($rootfs_dir)/etc/environment.sav"
-#    CHROOT cp $"($rootfs_dir)/etc/resolv.conf" $"($rootfs_dir)/etc/resolv.conf.sav"
-#    CHROOT cp $"($rootfs_dir)/etc/hosts" $"($rootfs_dir)etc/hosts.sav"
   
     # Copy hosts's resolv.conf and hosts
     SUDO cp /etc/environment $"($rootfs_dir)/etc/environment"
