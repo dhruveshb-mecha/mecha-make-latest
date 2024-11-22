@@ -24,7 +24,7 @@ export def debootstrap_deb [] {
 
   let debian_name = open $BUILD_CONF_PATH | get debian | get name
  
-  # TODO: uncomment
+  # Debootstrap debian
   SUDO debootstrap --arch arm64 --foreign --no-check-gpg --include=eatmydata,gnupg $debian_name $rootfs_dir http://deb.debian.org/debian
   CHROOT $rootfs_dir /debootstrap/debootstrap --second-stage
 }

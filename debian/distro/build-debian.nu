@@ -5,7 +5,6 @@ use modules/logger.nu *
 use modules/pkg.nu *
 use modules/network-config.nu *
 use modules/audio-config.nu *
-use modules/distro-config.nu *
 use modules/boot-config.nu *
 use modules/system-config.nu *
 use modules/user-config.nu *
@@ -66,61 +65,47 @@ def main [machine: string, build_dir: string] {
     # LANG: "C"
   }
 
-  # TODO: handle return code handling, create a stages runner
-
 
   try {
+    pre_condition_setup
+    
+    make_root_home_dir
+    
+    configure_networking 
+    
+    add_debian_mechanix_source
+    
+    boot_script 
+    
+    install_target_packages
+      
+    disable_diaply_service
+    
+    configure_audio 
+    
+    update_os_release 
+    
+    configure_udev
+    
+    oem_images 
+    
+    configure_bluetooth
+    
+    configure_ssh 
+    
+    configure_default_user
+    
+    configure_greeter
+    
+    configure_mechanix_system_dbus 
+    
+    configure_labwc_auto_launch
+    
+    configure_sys_files
 
-#-------------------------- Stage1: Setup rootfs -----------------------------#
+    unmount_sys_proc_volumes
 
-#  install_host_packages
-
-debootstrap_deb
-
-copy_qemu_arm_static
-
-mount_sys_proc_volumes
-
-make_root_home_dir
-
-configure_networking 
-
-add_debian_mechanix_source
-
-boot_script 
-
-install_target_packages
-  
-disable_diaply_service
-
-configure_audio 
-
-update_os_release 
-
-configure_udev
-
-oem_images 
-
-configure_bluetooth
-
-configure_ssh 
-
-configure_default_user
-
-configure_greeter
-
-configure_mechanix_system_dbus 
-
-configure_labwc_auto_launch
-
-configure_sys_files
-
-  # Stage4: Cleanup
-  unmount_sys_proc_volumes
-
-  # Pack rootfs
-  pack_root_fs 
-
+    pack_root_fs 
 
   } catch {
     |err| 
@@ -131,20 +116,27 @@ configure_sys_files
 }
 
 
+def pre_condition_setup [] {
+  log_info "Pre-condition setup:"
+  let rootfs_dir = $env.ROOTFS_DIR
+
+  debootstrap_deb
+
+  copy_qemu_arm_static
+
+  mount_sys_proc_volumes
+}
+
+
 def copy_qemu_arm_static [] {
+  # Check if qemu-arm-static exists
+  if (which qemu-arm-static | is-empty) {
+    log_error "`qemu-arm-static` is not installed, cannot continue further"
+    return
+  }
+
   log_info "Copying qemu-arm-static:"
-
-   let rootfs_dir = $env.ROOTFS_DIR
-
-  # # Check if `debootstrap` is installed
-  # let is_qemu_arm_static_installed = dpkg -l | grep qemu-arm-static | wc -l | into int
-
-  # # TODO: instead of checking with dpkg we can check with binary
-  # if $is_qemu_arm_static_installed == 0 {
-  #   log_error "`qemu-arm-static` is not installed, cannot continue further"
-  #   return
-  # }
-
+  let rootfs_dir = $env.ROOTFS_DIR
   SUDO cp /usr/bin/qemu-arm-static $"($rootfs_dir)/usr/bin/"
 }
 
@@ -167,40 +159,4 @@ def mount_sys_proc_volumes [] {
     if (SUDO mount | grep $"($rootfs_dir)/proc" | length) > 0 {
      SUDO mount proc $"($rootfs_dir)/proc" -t proc
     }
-
-
-}
-
-# def set_hostname [] {
-#   log_info "Setting hostname:"
-#   let rootfs_dir = $env.ROOTFS_DIR
-
-#   CHROOT $rootfs_dir hostnamectl set-hostname $TARGET_HOSTNAME
-# }
-
-
-
-def setup_default_locale_timezone [] {
-  log_info "Setting up default locale, timezone:"
-  let rootfs_dir = $env.ROOTFS_DIR
-  
-
-#  CHROOT $rootfs_dir localectl set-locale $"LANG=($TARGET_LOCALE)"
-  CHROOT $rootfs_dir timedatectl set-timezone $TARGET_TIMEZONE
-
-  # TODO: Why is this disabled
-  #$CHROOTCMD systemctl enable systemd-timesyncd
-}
-
-def update_apt [] {
-  log_info "Updating apt and setting locale:"
-    
-  let rootfs_dir = $env.ROOTFS_DIR
-  alias CHROOT = sudo chroot $rootfs_dir
-
-  # clean up and update
-#  CHROOT apt-get clean
-#  CHROOT apt-get update
-  CHROOT apt-get install locales
-  CHROOT localectl set-locale LANG=en_US.UTF-8
 }

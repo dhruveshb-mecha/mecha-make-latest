@@ -112,3 +112,22 @@ export def keyboard_config [] {
     log_info "Keyboard layout configured successfully."
 
 }
+
+export def update_locals [] {
+    log_info "OS Local settings"
+    
+    let rootfs_dir = $env.ROOTFS_DIR
+    alias CHROOT = sudo chroot $rootfs_dir
+
+    log_info "Setting up default language"
+
+    CHROOT apt-get install locales
+    CHROOT localectl set-locale LANG=en_US.UTF-8
+
+    log_info "Setting up default locale, timezone:"
+
+    let BUILD_CONF_PATH = $env.BUILD_CONF_PATH;
+    let TARGET_TIMEZONE = open $BUILD_CONF_PATH | get locale | get timezone
+
+    CHROOT $rootfs_dir timedatectl set-timezone $TARGET_TIMEZONE
+}
