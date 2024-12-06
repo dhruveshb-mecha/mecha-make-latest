@@ -40,6 +40,7 @@ jobs:
           push: false
           load: true
           tags: mechasystems/distro:latest
+          no-cache: true
 
       - name: Debug - List Docker images
         run: docker images
