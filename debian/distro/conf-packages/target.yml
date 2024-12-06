@@ -30,7 +30,7 @@ package_groups:
       - sudo
       - bash-completion
       - dosfstools
-      - cpufrequtils
+      # - cpufrequtils removed because of missing package in "sid"
       - upower
   - name: network
     packages:

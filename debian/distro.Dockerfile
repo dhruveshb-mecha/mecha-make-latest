@@ -64,10 +64,10 @@ COPY uboot /build/uboot
 RUN echo "Logging the files in the /build directory" && ls -la /build
 
 # Build and install Wayland and other packages using Nushell script
-RUN echo "Building packages" && \
-    cd /build/debian/distro && \
-    ls -la && \
-    nu build-debian.nu mecha-comet-m-gen1 /build/assets
+# RUN echo "Building packages" && \
+#     cd /build/debian/distro && \
+#     ls -la && \
+#     nu build-debian.nu mecha-comet-m-gen1 /build/assets
 
 # Set the default command to bash
 CMD ["/bin/bash"]
