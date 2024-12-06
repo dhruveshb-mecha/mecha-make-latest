@@ -34,7 +34,7 @@ jobs:
 
  # Step 5: Build Docker image (no cache, always pull latest base image)
       - name: Build Docker image
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v5
         with:
           context: .
           file: debian/distro.Dockerfile
