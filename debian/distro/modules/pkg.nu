@@ -51,9 +51,7 @@ export def install_target_packages [] {
     keyboard_config
 
 
-    let package_groups = open $TARGET_INSTALLATION_CONF | get package_groups
-
-    for pkg_group in $package_groups {
+     for pkg_group in $package_groups {
         log_debug $"Installing package group: ($pkg_group.packages)"
 
         # Check if the length of the list of packages is 0
@@ -62,12 +60,19 @@ export def install_target_packages [] {
         } else {
             # Iterate over each package within the group
             for pkg in $pkg_group.packages {
-                log_debug $"Installing package: ($pkg)"
-                # Install the package
-                CHROOT apt-get -y --allow-change-held-packages install $pkg
+                log_debug $"Attempting to install package: ($pkg)"
+                
+                # Use try-catch to handle installation errors
+                try {
+                    CHROOT apt-get -y --allow-change-held-packages install $pkg
+                } catch {
+                    log_error $"Failed to install package: ($pkg). Continuing with next package."
+                }
             }
         }
     }
+
+    log_info "Package installation attempt completed"
 
   
 }
