@@ -33,14 +33,13 @@ jobs:
           ls -R debian/packages
 
       - name: Build Docker image
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           context: .
           file: debian/distro.Dockerfile
           push: false
-          cache-from: none # Omit cache
-          # cache-to: none # Disable cache
-          load: true
+          no-cache: true          
+          # load: true
           tags: mechasystems/distro:latest
 
 
