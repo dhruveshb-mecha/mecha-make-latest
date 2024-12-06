@@ -42,14 +42,14 @@ jobs:
           no-cache: true       # Disable all caching
           pull: true           # Always pull the latest base image
           load: true           # Load image into the Docker daemon
-          tags: mechasystems/distro:latest
+          tags: mechasystems/distro:v1
 
 
       - name: Debug - List Docker images
         run: docker images
 
       - name: Debug - Show Docker image details
-        run: docker inspect mechasystems/distro:latest
+        run: docker inspect mechasystems/distro:v1
 
       - name: Remove existing container if it exists
         if: always()
@@ -62,7 +62,7 @@ jobs:
 
       - name: Run Docker container and collect artifacts
         run: |
-          docker run --name distro-container mechasystems/distro:latest
+          docker run --name distro-container mechasystems/distro:v1
           docker ps -a
           docker logs distro-container
           docker cp distro-container:/build/assets/deploy/debian-image-rootfs.tar.gz ./artifacts || echo "Failed to copy artifacts"
