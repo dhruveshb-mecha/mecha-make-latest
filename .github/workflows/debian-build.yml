@@ -32,14 +32,16 @@ jobs:
         run: |
           ls -R debian/packages
 
+ # Step 5: Build Docker image (no cache, always pull latest base image)
       - name: Build Docker image
         uses: docker/build-push-action@v6
         with:
           context: .
           file: debian/distro.Dockerfile
-          push: false
-          no-cache: true          
-          # load: true
+          push: false          # Do not push to a registry
+          no-cache: true       # Disable all caching
+          pull: true           # Always pull the latest base image
+          load: true           # Load image into the Docker daemon
           tags: mechasystems/distro:latest
 
 
@@ -50,8 +52,10 @@ jobs:
         run: docker inspect mechasystems/distro:latest
 
       - name: Remove existing container if it exists
+        if: always()
         run: |
-          docker rm -f distro-container || true
+          docker stop distro-container || true
+          docker rm distro-container || true
 
       - name: Make artifacts directory
         run: mkdir -p artifacts
