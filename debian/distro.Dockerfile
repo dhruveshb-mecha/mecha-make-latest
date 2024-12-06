@@ -1,5 +1,5 @@
 # Use Debian Bookworm as the base image
-FROM debian:bookworm
+FROM debian:sid
 
 # Set non-interactive frontend for apt-get
 ENV DEBIAN_FRONTEND=noninteractive
