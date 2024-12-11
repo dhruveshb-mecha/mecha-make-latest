@@ -23,8 +23,6 @@ def install_package [name: string, url: string, sha] {
 export def install_host_packages [] {
     log_info "Installing host packages:"
 
-    # Track overall success
-    mut overall_success = true
 
     log_debug $"Number of packages found: (open $HOST_INSTALLATION_CONF | get packages | length)"
 
@@ -34,14 +32,10 @@ export def install_host_packages [] {
             install_package $pkg.name $pkg.url $pkg.sha
         } catch {|err| 
             log_error $"Failed to install package ($pkg.name): ($err)"
-            $overall_success = false
+         
         }
     }
 
-    # Provide a final status report
-    if not $overall_success {
-        log_warn "Some packages failed to install. Check the logs for details."
-    }
 }
 
 export def install_target_packages [] {
@@ -57,8 +51,7 @@ export def install_target_packages [] {
     # Configure keyboard layout
     keyboard_config
 
-    # Track overall success
-    mut overall_success = true
+
 
     let package_groups = open $TARGET_INSTALLATION_CONF | get package_groups
 
@@ -79,17 +72,12 @@ export def install_target_packages [] {
                 CHROOT apt-get -y --allow-change-held-packages install $pkg
             } catch {|err| 
                 log_error $"Failed to install package ($pkg): ($err)"
-                $overall_success = false
                 # Continue with next package even if this one fails
                 continue
             }
         }
     }
 
-    # Provide a final status report
-    if not $overall_success {
-        log_warn "Some packages failed to install. Check the logs for details."
-    }
 }
 
 export def add_debian_mechanix_source [] {
