@@ -9,6 +9,8 @@ on:
       - uboot/**
       - .github/workflows/uboot-build.yml
 
+  workflow_dispatch: # Enables manual triggering of the workflow  
+
 jobs:
   build:
     strategy:
