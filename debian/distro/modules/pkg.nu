@@ -5,7 +5,6 @@ use os-config.nu *
 const HOST_INSTALLATION_CONF = "conf-packages/host.yml"
 const TARGET_INSTALLATION_CONF = "conf-packages/target.yml"
 
-
 alias CHROOT = sudo chroot
 
 def install_package [name: string, url: string, sha] {
@@ -19,25 +18,33 @@ def install_package [name: string, url: string, sha] {
     SUDO dpkg -i $pkg_path
 
     log_debug $"Package ($name) is installed"
-
 }
 
 export def install_host_packages [] {
     log_info "Installing host packages:"
 
-    # add the package source
-    
+    # Track overall success
+    let mut overall_success = true
 
-    # let packages = open $HOST_INSTALLATION_CONF;
     log_debug $"Number of packages found: (open $HOST_INSTALLATION_CONF | get packages | length)"
 
-    let _  = open $HOST_INSTALLATION_CONF | get packages | each {|pkg| 
-        install_package $pkg.name $pkg.url $pkg.sha
+    open $HOST_INSTALLATION_CONF | get packages | each {|pkg| 
+        # Catch and handle individual package installation failures
+        try {
+            install_package $pkg.name $pkg.url $pkg.sha
+        } catch {|err| 
+            log_error $"Failed to install package ($pkg.name): ($err)"
+            $overall_success = false
+        }
+    }
+
+    # Provide a final status report
+    if not $overall_success {
+        log_warn "Some packages failed to install. Check the logs for details."
     }
 }
 
 export def install_target_packages [] {
-
     log_info "Installing target packages:"
     
     let rootfs_dir = $env.ROOTFS_DIR
@@ -50,31 +57,39 @@ export def install_target_packages [] {
     # Configure keyboard layout
     keyboard_config
 
+    # Track overall success
+    let mut overall_success = true
 
-     for pkg_group in $package_groups {
-        log_debug $"Installing package group: ($pkg_group.packages)"
+    let package_groups = open $TARGET_INSTALLATION_CONF | get package_groups
+
+    for pkg_group in $package_groups {
+        log_debug $"Processing package group: ($pkg_group.packages)"
 
         # Check if the length of the list of packages is 0
         if ($pkg_group.packages | length) == 0 {
             log_debug "No packages found in this group."
-        } else {
-            # Iterate over each package within the group
-            for pkg in $pkg_group.packages {
+            continue
+        }
+
+        # Iterate over each package within the group
+        for pkg in $pkg_group.packages {
+            try {
                 log_debug $"Attempting to install package: ($pkg)"
-                
-                # Use try-catch to handle installation errors
-                try {
-                    CHROOT apt-get -y --allow-change-held-packages install $pkg
-                } catch {
-                    log_error $"Failed to install package: ($pkg). Continuing with next package."
-                }
+                # Install the package
+                CHROOT apt-get -y --allow-change-held-packages install $pkg
+            } catch {|err| 
+                log_error $"Failed to install package ($pkg): ($err)"
+                $overall_success = false
+                # Continue with next package even if this one fails
+                continue
             }
         }
     }
 
-    log_info "Package installation attempt completed"
-
-  
+    # Provide a final status report
+    if not $overall_success {
+        log_warn "Some packages failed to install. Check the logs for details."
+    }
 }
 
 export def add_debian_mechanix_source [] {
