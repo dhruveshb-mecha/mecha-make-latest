@@ -24,7 +24,7 @@ export def install_host_packages [] {
     log_info "Installing host packages:"
 
     # Track overall success
-    let overall_success = true
+    mut overall_success = true
 
     log_debug $"Number of packages found: (open $HOST_INSTALLATION_CONF | get packages | length)"
 
@@ -58,7 +58,7 @@ export def install_target_packages [] {
     keyboard_config
 
     # Track overall success
-    let overall_success = true
+    mut overall_success = true
 
     let package_groups = open $TARGET_INSTALLATION_CONF | get package_groups
 
