@@ -13,6 +13,7 @@ use modules/pack-rootfs.nu *
 use modules/os-config.nu *
 use modules/clean-up.nu *
 use modules/debootstrap.nu *
+use modules/chromium-config.nu *
 
 
 const BUILD_CONF_PATH = "./conf/build.yml" 
@@ -102,6 +103,8 @@ def main [machine: string, build_dir: string] {
     configure_labwc_auto_launch
     
     configure_sys_files
+
+    configure_chromium_preferences
 
     unmount_sys_proc_volumes
 

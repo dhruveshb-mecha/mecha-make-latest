@@ -74,6 +74,9 @@ package_groups:
       - alsa-utils 
       - libasound2 
       - libasound2-plugins
+  - name: web
+    packages:
+      - chromium 
   - name: mechanix
     packages:
       - mechanix-launcher
