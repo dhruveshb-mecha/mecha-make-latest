@@ -23,7 +23,7 @@ export def configure_chromium_preferences [] {
     }
     
     # Define the master preferences content as a string to ensure proper JSON format
-    let master_prefs_content = '''{
+    let master_prefs_content = '{
         "homepage": "http://www.google.com",
         "homepage_is_newtabpage": false,
         "browser": {
@@ -65,10 +65,10 @@ export def configure_chromium_preferences [] {
             "http://www.example.com",
             "http://new_tab_page"
         ]
-    }'''
+    }'
     
     # Define the policy content as a string to ensure proper JSON format
-    let policy_content = '''{
+    let policy_content = '{
         "HomepageLocation": "https://www.youtube.com",
         "RestoreOnStartup": 4,
         "DefaultSearchProviderSearchURL": "https://duckduckgo.com/?q={searchTerms}",
@@ -80,7 +80,7 @@ export def configure_chromium_preferences [] {
         "Color": "#4B0082",
         "ForceFirstRun": true,
         "BrowserThemeColor": "#4B0082"
-    }'''
+    }'
     
     # Write master preferences file
     log_debug $"Writing master preferences to: ($master_prefs_file)"
