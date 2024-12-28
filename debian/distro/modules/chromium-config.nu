@@ -1,3 +1,9 @@
+#!/usr/bin/env nu
+
+use logger.nu
+
+alias SUDO = sudo
+
 export def configure_chromium_preferences [] {
     log_info "Configuring Chromium preferences:"
     let rootfs_dir = $env.ROOTFS_DIR
