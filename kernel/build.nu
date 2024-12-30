@@ -18,6 +18,7 @@ def main [machine: string,build_dir: string] {
     let arch = $machine_config.flags.arch
     let cross_compile = $machine_config.flags.cross_compile
     let debian_frontend = $machine_config.flags.debian_frontend
+    let platform = $machine_config.flags.platform
 
     # check_and_install_dependencies
     check_and_install_dependencies
@@ -43,19 +44,20 @@ def main [machine: string,build_dir: string] {
         DEBIAN_FRONTEND: $debian_frontend,
         KERNEL_REPO: $kernel_repo,
         KERNEL_REV: $kernel_rev,
-        CONFIG_FILE: $config_file
+        CONFIG_FILE: $config_file,
+        PLATFORM: $platform
     }
 
     # Build kernel
     build_kernel
 
     # Build debians for kernel modules
-    build_debians
+    build_deb_packages
 
     # Collect artifact
     collect_artifact
 
-    log_info "Kernel build script completed successfully for rev4"
+    log_info "Kernel build script completed successfully"
 }
 
 # Build Kernel
@@ -86,9 +88,11 @@ def collect_artifact [] {
     let deploy_dir = $env.DEPLOY_DIR
     let work_dir = $env.WORK_DIR
     let arch = $env.ARCH
+    let platform = $env.PLATFORM
 
+ 
     let artifact_path_1 = $work_dir + $"/linux/arch/($arch)/boot/Image"
-    let artifact_path_2 = $work_dir + $"/linux/arch/($arch)/boot/dts/freescale/imx8mm-mecha-comet-m-gen1*"
+    let artifact_path_2 = $work_dir + $"/linux/arch/($arch)/boot/dts/freescale/($platform)*"
   
     cp $artifact_path_1 $deploy_dir
         # Find and copy the second artifact(s)
@@ -103,7 +107,7 @@ def collect_artifact [] {
 }
 
 # Build debians
-def build_debians [] {
+def build_deb_packages [] {
     log_info "Building debian packages for kernel modules"
     let work_dir = $env.WORK_DIR
     log_debug $work_dir

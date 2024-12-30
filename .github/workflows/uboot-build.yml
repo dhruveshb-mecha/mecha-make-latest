@@ -1,0 +1,98 @@
+name: Uboot-build
+
+on:
+  push:
+    branches:
+      - main
+      - dev*
+    paths:
+      - uboot/**
+      - .github/workflows/uboot-build.yml
+
+  workflow_dispatch: # Enables manual triggering of the workflow  
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        machine: [mecha-comet-gen1]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install basic dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y curl wget
+
+      - name: Install Nushell
+        run: |
+          ARCH=$(uname -m) && \
+          case ${ARCH} in \
+          x86_64) NUSHELL_ARCH="x86_64-unknown-linux-gnu" ;; \
+          aarch64) NUSHELL_ARCH="aarch64-unknown-linux-gnu" ;; \
+          armv7l) NUSHELL_ARCH="armv7-unknown-linux-gnueabihf" ;; \
+          *) echo "Unsupported architecture: ${ARCH}" && exit 1 ;; \
+          esac && \
+          wget https://github.com/nushell/nushell/releases/download/0.96.0/nu-0.96.0-${NUSHELL_ARCH}.tar.gz && \
+          tar -xzvf nu-0.96.0-${NUSHELL_ARCH}.tar.gz && \
+          sudo mv nu-0.96.0-${NUSHELL_ARCH}/nu /usr/local/bin/ && \
+          rm -rf nu-0.96.0-${NUSHELL_ARCH}.tar.gz nu-0.96.0-${NUSHELL_ARCH}
+
+      - name: Read and Install Additional Dependencies
+        run: |
+          PACKAGES=$(nu -c "open uboot/conf-packages/host.yml | get packages | str join ' '")
+          sudo apt-get install -y $PACKAGES
+
+      - name: Build Directory
+        run: |
+          mkdir -p build
+
+      - name: Run Uboot Build Script
+        run: |
+          cd uboot
+          nu build.nu ${{ matrix.machine }} ../build
+
+      - name: List all files
+        run: |
+          ls -laR build/deploy
+
+      - name: Prepare Uboot artifacts
+        id: prepare_artifacts
+        run: |
+          mkdir artifacts
+          VERSION=$(nu -c "open uboot/machines/${{ matrix.machine }}.yml | get version")
+          echo "VERSION=${VERSION}" >> $GITHUB_ENV
+          for file in build/deploy/u-boot/*; do
+            base=$(basename "$file")
+            mv "$file" "artifacts/${base%.bin}-v${VERSION}.bin"
+          done
+
+      - name: List all Artifacts
+        run: |
+          ls -laR artifacts
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: bootloader-artifacts
+          path: ./artifacts/*
+
+      - name: Create Tag
+        id: create_tag
+        run: |
+          VERSION=${{ env.VERSION }}
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git tag -a "v${VERSION}" -m "Release version ${VERSION}"
+          git push origin "v${VERSION}"
+
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ env.VERSION }}
+          name: Release v${{ env.VERSION }}
+          body: "Automatic release of version ${{ env.VERSION }}"
+          files: |
+            artifacts/*

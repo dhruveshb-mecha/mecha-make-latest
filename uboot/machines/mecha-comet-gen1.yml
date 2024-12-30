@@ -1,0 +1,21 @@
+src: "https://github.com/chiragp-mecha/u-boot/archive/refs/heads/imx-2023.04.y.tar.gz"
+rev: "1.0" # commit id or tag
+version: "1.0"
+flags: 
+  defconfig: "mecha_cometm_gen1_defconfig"
+  platform: "mecha-comet"
+
+deps:
+  imx-atf:
+    src: "https://github.com/nxp-imx/imx-atf.git" # add .git
+    rev: "99195a23d3aef485fb8f10939583b1bdef18881c"
+  imx-mkimage:
+    src: "https://github.com/nxp-imx/imx-mkimage.git"
+    rev: "d489494622585a47b4be88988595b0e4f9598f39"
+  trusted-firmware:
+    src: "https://www.nxp.com/lgfiles/NMG/MAD/YOCTO/firmware-imx-8.20.bin"
+    sha2: ""
+    
+patches:
+  power-off: "./patches/imx-atf/0001-resolve-poweroff-issue.patch"
+
