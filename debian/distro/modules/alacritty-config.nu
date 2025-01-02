@@ -41,12 +41,8 @@ export def configure_alacritty [] {
     
     # Copy configuration file
     log_debug $"Copying ($alacritty_config) to ($config_dest)"
-    if (SUDO cp $alacritty_config $"($config_dest)/alacritty.yml") {
-        log_info "alacritty.yml copied successfully."
-    } else {
-        log_error "Failed to copy alacritty.yml. Please check file path."
-        return 1
-    }
+    SUDO cp $alacritty_config $"($config_dest)/alacritty.yml"
+    log_info "alacritty.yml copied successfully."
 
     # Create theme directory and copy theme
     log_info "Setting up Alacritty theme..."
@@ -57,12 +53,8 @@ export def configure_alacritty [] {
     
     # Copy theme file
     log_debug $"Copying ($alacritty_theme) to ($theme_dest)"
-    if (SUDO cp $alacritty_theme $"($theme_dest)/flat-remix.yml") {
-        log_info "flat-remix.yml theme file copied successfully."
-    } else {
-        log_error "Failed to copy flat-remix.yml. Please check file path."
-        return 1
-    }
+    SUDO cp $alacritty_theme $"($theme_dest)/flat-remix.yml"
+    log_info "flat-remix.yml theme file copied successfully."
 
     log_debug "Alacritty configuration completed successfully."
 }
