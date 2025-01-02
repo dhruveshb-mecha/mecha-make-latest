@@ -87,5 +87,11 @@ package_groups:
       - mechanix-keyboard
       - mechanix_desktop_dbus_server
       - mechanix_system_dbus_server
+      - mechanix-camera
+      - mechanix-files
+      - mechanix-settings
+      - mecha-connect
+      - mecha-agent
+
 
 
