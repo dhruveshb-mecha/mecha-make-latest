@@ -10,10 +10,15 @@ export def configure_alacritty [] {
     let build_conf_path = $env.BUILD_CONF_PATH
     
     let script_dir_path = (open $build_conf_path | get include-path)
-    let alacritty_package_path = $script_dir_path + "/alacritty/"
+    let alacritty_package_path = $script_dir_path + "/alacritty"
     let alacritty_bin = $alacritty_package_path + "alacritty"
+    log_debug $"Alacritty binary path: ($alacritty_bin)"
+
     let alacritty_config = $alacritty_package_path + "alacritty.yml"
+    log_debug $"Alacritty configuration path: ($alacritty_config)"
+
     let alacritty_theme = $alacritty_package_path + "flat-remix.yml"
+    log_debug $"Alacritty theme path: ($alacritty_theme)"
     
     let alacritty_dest = $"($rootfs_dir)/usr/bin/"
     let config_dir = $"($rootfs_dir)/home/mecha/.config"
@@ -21,34 +26,43 @@ export def configure_alacritty [] {
     let theme_dest = $"($rootfs_dir)/home/mecha/.alacritty-theme/themes"
 
     # System-level configuration
+    log_info "Installing alacritty binary..."
     SUDO cp $alacritty_bin $alacritty_dest
-    log_debug "System files configured successfully."
+    log_debug "System binary installation completed successfully."
 
     # User-level configuration
     log_info "Setting up user alacritty configuration..."
     
-    # Create config directory
-    mkdir $config_dest
+    # Create config directory if it doesn't exist
+    if not ($config_dest | path exists) {
+        log_debug $"Creating directory: ($config_dest)"
+        SUDO mkdir -p $config_dest
+    }
     
     # Copy configuration file
-    if (cp $alacritty_config $"($config_dest)/alacritty.yml") {
-        log_info "alacritty.yml moved successfully."
+    log_debug $"Copying ($alacritty_config) to ($config_dest)"
+    if (SUDO cp $alacritty_config $"($config_dest)/alacritty.yml") {
+        log_info "alacritty.yml copied successfully."
     } else {
-        log_error "Failed to move alacritty.yml. Please check file path."
+        log_error "Failed to copy alacritty.yml. Please check file path."
         return 1
     }
 
     # Create theme directory and copy theme
     log_info "Setting up Alacritty theme..."
-    mkdir $theme_dest
+    if not ($theme_dest | path exists) {
+        log_debug $"Creating directory: ($theme_dest)"
+        SUDO mkdir -p $theme_dest
+    }
     
     # Copy theme file
-    if (cp $alacritty_theme $"($theme_dest)/flat-remix.yml") {
-        log_info "flat-remix.yml theme file moved successfully."
+    log_debug $"Copying ($alacritty_theme) to ($theme_dest)"
+    if (SUDO cp $alacritty_theme $"($theme_dest)/flat-remix.yml") {
+        log_info "flat-remix.yml theme file copied successfully."
     } else {
-        log_error "Failed to move flat-remix.yml. Please check file path."
+        log_error "Failed to copy flat-remix.yml. Please check file path."
         return 1
     }
 
-    log_debug "User configuration completed successfully."
+    log_debug "Alacritty configuration completed successfully."
 }
