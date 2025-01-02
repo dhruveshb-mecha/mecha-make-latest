@@ -10,7 +10,7 @@ export def configure_alacritty [] {
     let build_conf_path = $env.BUILD_CONF_PATH
     
     let script_dir_path = (open $build_conf_path | get include-path)
-    let alacritty_package_path = $script_dir_path + "/alacritty"
+    let alacritty_package_path = $script_dir_path + "/alacritty/"
     let alacritty_bin = $alacritty_package_path + "alacritty"
     log_debug $"Alacritty binary path: ($alacritty_bin)"
 
