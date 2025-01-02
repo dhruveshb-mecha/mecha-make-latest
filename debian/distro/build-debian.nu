@@ -94,14 +94,14 @@ def main [machine: string, build_dir: string] {
     configure_bluetooth
     
     configure_ssh 
-
-    configure_alacritty
-    
+       
     configure_default_user
     
     configure_greeter
     
     configure_mechanix_system_dbus 
+
+    configure_alacritty
     
     configure_labwc_auto_launch
     
