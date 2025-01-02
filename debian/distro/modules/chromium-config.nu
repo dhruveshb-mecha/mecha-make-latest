@@ -32,11 +32,11 @@ export def configure_chromium_preferences [] {
         "session": {
             "restore_on_startup": 4,
             "startup_urls": [
-                "http://www.google.com/ig"
+                "http://www.google.com/"
             ]
         },
         "bookmark_bar": {
-            "show_on_all_tabs": true
+            "show_on_all_tabs": false
         },
         "sync_promo": {
             "show_on_first_run_allowed": false
@@ -62,16 +62,15 @@ export def configure_chromium_preferences [] {
             }
         },
         "first_run_tabs": [
-            "http://www.example.com",
+            "https://mecha.so/",
             "http://new_tab_page"
         ]
     }'
     
     # Define the policy content as a string to ensure proper JSON format
     let policy_content = '{
-        "HomepageLocation": "https://www.youtube.com",
+        "HomepageLocation": "https://www.google.com",
         "RestoreOnStartup": 4,
-        "DefaultSearchProviderSearchURL": "https://duckduckgo.com/?q={searchTerms}",
         "BlockOutdatedPlugins": true,
         "DisableJavaScript": false,
         "IncognitoModeAvailability": 1,
