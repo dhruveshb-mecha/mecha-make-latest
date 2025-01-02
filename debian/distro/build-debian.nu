@@ -14,6 +14,7 @@ use modules/os-config.nu *
 use modules/clean-up.nu *
 use modules/debootstrap.nu *
 use modules/chromium-config.nu *
+use modules/alacritty-config.nu *
 
 
 const BUILD_CONF_PATH = "./conf/build.yml" 
@@ -93,6 +94,8 @@ def main [machine: string, build_dir: string] {
     configure_bluetooth
     
     configure_ssh 
+
+    configure_alacritty
     
     configure_default_user
     
