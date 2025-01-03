@@ -284,8 +284,8 @@ export def set_config_dir_ownership [] {
     log_info "Ownership set successfully."
 }
 
-export def configure_onscreen_keyboard [] {
-    log_info "Configuring system-wide on-screen keyboard settings:"
+export def configure_mecha_system_pref [] {
+    log_info "Configuring system settings:"
     let rootfs_dir = $env.ROOTFS_DIR
     
     # Use chroot to execute gsettings command
@@ -294,5 +294,23 @@ export def configure_onscreen_keyboard [] {
     log_debug "Enabling on-screen keyboard system-wide"
     CHROOT gsettings set org.gnome.desktop.a11y.applications screen-keyboard-enabled true
     
-    log_info "System-wide on-screen keyboard configuration completed."
+    log_debug "Removing unused desktop files"
+    # Remove unwanted desktop files
+    let files_to_remove = [
+        "/usr/share/applications/system-config-printer.desktop",
+        "/usr/share/applications/vim.desktop",
+        "/usr/share/applications/debian-uxterm.desktop",
+        "/usr/share/applications/debian-xterm.desktop"
+    ]
+    
+    for file in $files_to_remove {
+        let file_path = $"($rootfs_dir)($file)"
+        if ($file_path | path exists) {
+            log_debug $"Removing file: ($file_path)"
+            SUDO rm $file_path
+        }
+        log_debug "File not found: ($file_path)"
+    }
+    
+    log_info "System-wide settings configuration completed."
 }
