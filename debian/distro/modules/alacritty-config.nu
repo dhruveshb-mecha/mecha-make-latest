@@ -36,24 +36,24 @@ export def configure_alacritty [] {
     # Create config directory if it doesn't exist
     if not ($config_dest | path exists) {
         log_debug $"Creating directory: ($config_dest)"
-        SUDO mkdir -p $config_dest
+        mkdir -p $config_dest
     }
     
     # Copy configuration file
     log_debug $"Copying ($alacritty_config) to ($config_dest)"
-    SUDO cp $alacritty_config $"($config_dest)/alacritty.yml"
+    cp $alacritty_config $"($config_dest)/alacritty.yml"
     log_info "alacritty.yml copied successfully."
 
     # Create theme directory and copy theme
     log_info "Setting up Alacritty theme..."
     if not ($theme_dest | path exists) {
         log_debug $"Creating directory: ($theme_dest)"
-        SUDO mkdir -p $theme_dest
+        mkdir -p $theme_dest
     }
     
     # Copy theme file
     log_debug $"Copying ($alacritty_theme) to ($theme_dest)"
-    SUDO cp $alacritty_theme $"($theme_dest)/flat-remix.yml"
+    cp $alacritty_theme $"($theme_dest)/flat-remix.yml"
     log_info "flat-remix.yml theme file copied successfully."
 
     log_debug "Alacritty configuration completed successfully."
