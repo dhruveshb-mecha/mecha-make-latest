@@ -109,6 +109,10 @@ def main [machine: string, build_dir: string] {
 
     configure_chromium_preferences
 
+    configure_onscreen_keyboard
+
+    set_config_dir_ownership
+
     unmount_sys_proc_volumes
 
     pack_root_fs 
