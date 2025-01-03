@@ -319,7 +319,7 @@ export def configure_mecha_system_pref [] {
     ]
     
     for file in $files_to_remove {
-        let file_path = $"($rootfs_dir)($file)"
+        let file_path = $"($file)"
         if ($file_path | path exists) {
             log_debug $"Removing file: ($file_path)"
             SUDO rm $file_path
