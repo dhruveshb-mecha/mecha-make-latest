@@ -280,8 +280,14 @@ mechanix-keyboard -s /etc/mechanix/shell/keyboard/settings.yml &"
 export def set_config_dir_ownership [] {
     let config_dir = $"($env.ROOTFS_DIR)/home/mecha/.config"
     log_debug $"Setting ownership of ($config_dir) to mecha:mecha"
-    SUDO chown -R mecha:mecha $config_dir
+     # Use chroot to execute gsettings command
+    alias CHROOT = sudo chroot $rootfs_dir
+    try {
+    CHROOT chown -R mecha:mecha $config_dir
     log_info "Ownership set successfully."
+    } catch {
+      log_error $"Failed to set ownership"
+    }
 }
 
 export def configure_mecha_system_pref [] {
