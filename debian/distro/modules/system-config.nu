@@ -306,7 +306,7 @@ export def configure_mecha_system_pref [] {
         log_info "On-screen keyboard enabled system-wide."
     } catch {
         |error|
-        log_error "Failed to enable on-screen keyboard system-wide. Error: ($error)"
+        log_error "Failed to enable on-screen keyboard system-wide. "
     }
     
     log_debug "Removing unused desktop files"
@@ -318,14 +318,15 @@ export def configure_mecha_system_pref [] {
         "/usr/share/applications/debian-xterm.desktop"
     ]
     
-    for file in $files_to_remove {
-        let file_path = $"($file)"
-        if ($file_path | path exists) {
-            log_debug $"Removing file: ($file_path)"
-            SUDO rm $file_path
-        }
+for file in $files_to_remove {
+    let file_path = $"($rootfs_dir)($file)"
+    if ($file_path | path exists) {
+        log_debug $"Removing file: ($file_path)"
+        SUDO rm $file_path
+    } else {
         log_debug "File not found: ($file_path)"
     }
+}
     
     log_info "System-wide settings configuration completed."
 }
