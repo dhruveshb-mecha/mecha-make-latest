@@ -289,7 +289,7 @@ export def set_config_dir_ownership [] {
     CHROOT chown -R mecha:mecha $config_dir
     log_info "Ownership set successfully."
     } catch {
-      log_error $"Failed to set ownership"
+     |error| log_error $"Failed to set ownership : ($error)"
     }
 }
 
@@ -305,7 +305,8 @@ export def configure_mecha_system_pref [] {
         CHROOT gsettings set org.gnome.desktop.a11y.applications screen-keyboard-enabled true
         log_info "On-screen keyboard enabled system-wide."
     } catch {
-        log_error "Failed to enable on-screen keyboard system-wide."
+        |error|
+        log_error "Failed to enable on-screen keyboard system-wide. Error: ($error)"
     }
     
     log_debug "Removing unused desktop files"
