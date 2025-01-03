@@ -280,8 +280,17 @@ mechanix-keyboard -s /etc/mechanix/shell/keyboard/settings.yml &"
 export def set_config_dir_ownership [] {
     let config_dir = $"($env.ROOTFS_DIR)/home/mecha/.config"
     log_debug $"Setting ownership of ($config_dir) to mecha:mecha"
-    SUDO chown -R mecha:mecha $config_dir
+    
+    let rootfs_dir = $env.ROOTFS_DIR
+
+     # Use chroot to execute gsettings command
+    alias CHROOT = sudo chroot $rootfs_dir
+    try {
+    CHROOT chown -R mecha:mecha $config_dir
     log_info "Ownership set successfully."
+    } catch {
+      log_error $"Failed to set ownership"
+    }
 }
 
 export def configure_mecha_system_pref [] {
@@ -292,7 +301,12 @@ export def configure_mecha_system_pref [] {
     alias CHROOT = sudo chroot $rootfs_dir
     
     #log_debug "Enabling on-screen keyboard system-wide"
-    #CHROOT gsettings set org.gnome.desktop.a11y.applications screen-keyboard-enabled true
+    try {
+        CHROOT gsettings set org.gnome.desktop.a11y.applications screen-keyboard-enabled true
+        log_info "On-screen keyboard enabled system-wide."
+    } catch {
+        log_error "Failed to enable on-screen keyboard system-wide."
+    }
     
     log_debug "Removing unused desktop files"
     # Remove unwanted desktop files
