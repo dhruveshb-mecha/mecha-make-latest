@@ -76,9 +76,9 @@ export def configure_chromium_preferences [] {
         "IncognitoModeAvailability": 1,
         "ForceDarkMode": true,
         "ShowHomeButton": true,
-        "Color": "#4B0082",
+        "Color": "#2B2B2B",
         "ForceFirstRun": true,
-        "BrowserThemeColor": "#4B0082"
+        "BrowserThemeColor": "#2B2B2B"
     }'
     
     # Write master preferences file
@@ -90,6 +90,35 @@ export def configure_chromium_preferences [] {
     log_debug $"Writing policy file to: ($policy_file)"
     echo $policy_content | SUDO tee $policy_file
     SUDO chmod 644 $policy_file
+
+
+    # Create chromium.desktop file
+    let desktop_file_path = "/usr/share/applications/chromium.desktop"
+    let desktop_file_dir = "/usr/share/applications"
+
+    if not ($desktop_file_dir | path exists) {
+        log_debug $"Creating directory: ($desktop_file_dir)"
+        SUDO mkdir -p $desktop_file_dir
+    }
+
+    let desktop_file_content = '
+    [Desktop Entry]
+    Type=Application
+    TryExec=chromium
+    Exec=sh -c "export DISPLAY=:0 && chromium"
+    Icon=/usr/share/mechanix/shell/launcher/assets/icons/app_drawer/chromium_icon.png
+    Terminal=false
+    Categories=System;
+
+    Name=Chromium
+    GenericName=Chromium
+    Comment=Browser app
+    '
+
+    log_debug $"Writing desktop file to: ($desktop_file_path)"
+    echo $desktop_file_content | SUDO tee $desktop_file_path
+    SUDO chmod 644 $desktop_file_path
+
     
     log_info "Chromium configuration completed."
 }

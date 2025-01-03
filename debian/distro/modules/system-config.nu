@@ -200,14 +200,14 @@ WantedBy=sysinit.target"
 
   log_debug "Mechanix system dbus service configured successfully."
 }
-
 export def configure_labwc_auto_launch [] {
-    log_info "Configuring labwc autostart:"
+    log_info "Configuring labwc autostart and rc.xml:"
     let rootfs_dir = $env.ROOTFS_DIR
     
     # Define the config directory relative to rootfs
     let config_dir = $"($rootfs_dir)/home/mecha/.config/labwc"
     let autostart_file = $"($config_dir)/autostart"
+    let rc_file = $"($config_dir)/rc.xml"
     
     # Create the config directory if it doesn't exist
     if not ($config_dir | path exists) {
@@ -219,8 +219,40 @@ export def configure_labwc_auto_launch [] {
     let autostart_content = "mechanix-launcher -s /etc/mechanix/shell/launcher/settings.yml &
 mechanix_desktop_dbus_server -s /etc/mechanix-gui/server/desktop/settings.yml &
 mechanix-keyboard -s /etc/mechanix/shell/keyboard/settings.yml &"
+
+    # Define the rc.xml content
+    let rc_content = '<?xml version="1.0"?>
+<labwc_config>
+    <windowRules>
+        <windowRule identifier="*" serverDecoration="no" />
+        <windowRule title="Alacritty">
+            <action name="ToggleMaximize" />
+        </windowRule>
+        <windowRule title="Mozilla Firefox">
+            <action name="ToggleMaximize" />
+        </windowRule>
+        <windowRule title="Nautilus">
+            <action name="ToggleMaximize" />
+        </windowRule>
+        <windowRule title="Chromium">
+            <action name="ToggleMaximize" />
+        </windowRule>
+        <windowRule title="Mecha Connect">
+            <action name="ToggleMaximize" />
+        </windowRule>
+        <windowRule title="Files">
+            <action name="ToggleMaximize" />
+        </windowRule>
+        <windowRule title="Camera">
+            <action name="ToggleMaximize" />
+        </windowRule>
+        <windowRule title="Settings">
+            <action name="ToggleMaximize" />
+        </windowRule>
+    </windowRules>
+</labwc_config>'
     
-    # Check if autostart file exists
+    # Configure autostart file
     if not ($autostart_file | path exists) {
         log_debug $"Creating autostart file: ($autostart_file)"
         echo $autostart_content | SUDO tee $autostart_file
@@ -230,6 +262,55 @@ mechanix-keyboard -s /etc/mechanix/shell/keyboard/settings.yml &"
     } else {
         log_debug $"Autostart file already exists at ($autostart_file)"
     }
+
+    # Configure rc.xml file
+    if not ($rc_file | path exists) {
+        log_debug $"Creating rc.xml file: ($rc_file)"
+        echo $rc_content | SUDO tee $rc_file
+        
+        # Set proper permissions
+        SUDO chmod 644 $rc_file
+    } else {
+        log_debug $"rc.xml file already exists at ($rc_file)"
+    }
     
-    log_info "Labwc autostart configuration completed."
+    log_info "Labwc configuration completed."
+}
+
+export def set_config_dir_ownership [] {
+    let config_dir = $"($env.ROOTFS_DIR)/home/mecha/.config"
+    log_debug $"Setting ownership of ($config_dir) to mecha:mecha"
+    SUDO chown -R mecha:mecha $config_dir
+    log_info "Ownership set successfully."
+}
+
+export def configure_mecha_system_pref [] {
+    log_info "Configuring system settings:"
+    let rootfs_dir = $env.ROOTFS_DIR
+    
+    # Use chroot to execute gsettings command
+    alias CHROOT = sudo chroot $rootfs_dir
+    
+    log_debug "Enabling on-screen keyboard system-wide"
+    CHROOT gsettings set org.gnome.desktop.a11y.applications screen-keyboard-enabled true
+    
+    log_debug "Removing unused desktop files"
+    # Remove unwanted desktop files
+    let files_to_remove = [
+        "/usr/share/applications/system-config-printer.desktop",
+        "/usr/share/applications/vim.desktop",
+        "/usr/share/applications/debian-uxterm.desktop",
+        "/usr/share/applications/debian-xterm.desktop"
+    ]
+    
+    for file in $files_to_remove {
+        let file_path = $"($rootfs_dir)($file)"
+        if ($file_path | path exists) {
+            log_debug $"Removing file: ($file_path)"
+            SUDO rm $file_path
+        }
+        log_debug "File not found: ($file_path)"
+    }
+    
+    log_info "System-wide settings configuration completed."
 }
