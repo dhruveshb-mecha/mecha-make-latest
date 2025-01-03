@@ -111,8 +111,6 @@ def main [machine: string, build_dir: string] {
 
     configure_mecha_system_pref
 
-    set_config_dir_ownership
-
     unmount_sys_proc_volumes
 
     pack_root_fs 
