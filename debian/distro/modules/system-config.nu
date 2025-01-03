@@ -301,7 +301,12 @@ export def configure_mecha_system_pref [] {
     alias CHROOT = sudo chroot $rootfs_dir
     
     #log_debug "Enabling on-screen keyboard system-wide"
-    #CHROOT gsettings set org.gnome.desktop.a11y.applications screen-keyboard-enabled true
+    try {
+        CHROOT gsettings set org.gnome.desktop.a11y.applications screen-keyboard-enabled true
+        log_info "On-screen keyboard enabled system-wide."
+    } catch {
+        log_error "Failed to enable on-screen keyboard system-wide."
+    }
     
     log_debug "Removing unused desktop files"
     # Remove unwanted desktop files
