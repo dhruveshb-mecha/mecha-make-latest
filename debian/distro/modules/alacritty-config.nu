@@ -40,7 +40,7 @@ export def configure_alacritty [] {
     # Create config directory if it doesn't exist
     if not ($config_dest | path exists) {
         log_debug $"Creating directory: ($config_dest)"
-        mkdir $config_dest
+        mkdir -p $config_dest
     }
     
     # Copy configuration file
@@ -52,7 +52,7 @@ export def configure_alacritty [] {
     log_info "Setting up Alacritty theme..."
     if not ($theme_dest | path exists) {
         log_debug $"Creating directory: ($theme_dest)"
-        mkdir $theme_dest
+        mkdir -p $theme_dest
     }
     
     # Copy theme file
