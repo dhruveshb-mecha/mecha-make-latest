@@ -96,9 +96,10 @@ export def configure_chromium_preferences [] {
     let desktop_file_path = "/usr/share/applications/chromium.desktop"
     let desktop_file_dir = "/usr/share/applications"
 
-    if not ($desktop_file_dir | path exists) {
-        log_debug $"Creating directory: ($desktop_file_dir)"
-        SUDO mkdir -p $desktop_file_dir
+    # Remove existing file if it exists
+    if ($desktop_file_path | path exists) {
+        log_debug $"Removing existing desktop file: ($desktop_file_path)"
+        SUDO rm $desktop_file_path
     }
 
     let desktop_file_content = '
@@ -116,7 +117,7 @@ export def configure_chromium_preferences [] {
     '
 
     log_debug $"Writing desktop file to: ($desktop_file_path)"
-    echo $desktop_file_content | SUDO tee $desktop_file_path
+    echo $desktop_file_content | SUDO > $desktop_file_path
     SUDO chmod 644 $desktop_file_path
 
     

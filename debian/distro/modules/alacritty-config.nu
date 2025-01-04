@@ -60,5 +60,37 @@ export def configure_alacritty [] {
     cp $alacritty_theme $"($theme_dest)/flat-remix.yml"
     log_info "flat-remix.yml theme file copied successfully."
 
+    
+    # Create Alacritty.desktop file
+    let desktop_file_path = "/usr/share/applications/Alacritty.desktop"
+    let desktop_file_dir = "/usr/share/applications"
+
+    let desktop_file_content = '
+    [Desktop Entry]
+    Type=Application
+    TryExec=alacritty
+    Exec=alacritty
+    Icon=Alacritty
+    Terminal=false
+    Categories=System;TerminalEmulator;
+
+    Name=Alacritty
+    GenericName=Terminal
+    Comment=A fast, cross-platform, OpenGL terminal emulator
+    StartupNotify=true
+    StartupWMClass=Alacritty
+    Actions=New;
+
+    [Desktop Action New]
+    Name=New Terminal
+    Exec=alacritty
+    '
+
+    log_debug $"Writing desktop file to: ($desktop_file_path)"
+    echo $desktop_file_content | SUDO > $desktop_file_path
+    SUDO chmod 644 $desktop_file_path
+
+
+
     log_debug "Alacritty configuration completed successfully."
 }
