@@ -276,7 +276,7 @@ mechanix-keyboard -s /etc/mechanix/shell/keyboard/settings.yml &"
 }
 
 export def set_config_dir_ownership [] {
-    let config_dir = $"($env.ROOTFS_DIR)/home/mecha/.config"
+    let config_dir = $"/home/mecha/.config"
     log_debug $"Setting ownership of ($config_dir) to mecha:mecha"
     
     let rootfs_dir = $env.ROOTFS_DIR
@@ -287,7 +287,7 @@ export def set_config_dir_ownership [] {
     CHROOT chown -R mecha:mecha $config_dir
     log_info "Ownership set successfully."
     } catch {
-      log_error $"Failed to set ownership"
+     |error| log_error $"Failed to set ownership : ($error)"
     }
 }
 
@@ -303,7 +303,8 @@ export def configure_mecha_system_pref [] {
         CHROOT gsettings set org.gnome.desktop.a11y.applications screen-keyboard-enabled true
         log_info "On-screen keyboard enabled system-wide."
     } catch {
-        log_error "Failed to enable on-screen keyboard system-wide."
+        |error|
+        log_error "Failed to enable on-screen keyboard system-wide. "
     }
     
     log_debug "Removing unused desktop files"
@@ -315,14 +316,15 @@ export def configure_mecha_system_pref [] {
         "/usr/share/applications/debian-xterm.desktop"
     ]
     
-    for file in $files_to_remove {
-        let file_path = $"($rootfs_dir)($file)"
-        if ($file_path | path exists) {
-            log_debug $"Removing file: ($file_path)"
-            SUDO rm $file_path
-        }
+for file in $files_to_remove {
+    let file_path = $"($rootfs_dir)($file)"
+    if ($file_path | path exists) {
+        log_debug $"Removing file: ($file_path)"
+        SUDO rm $file_path
+    } else {
         log_debug "File not found: ($file_path)"
     }
+}
     
     log_info "System-wide settings configuration completed."
 }
