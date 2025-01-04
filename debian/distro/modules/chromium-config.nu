@@ -117,7 +117,7 @@ export def configure_chromium_preferences [] {
     '
 
     log_debug $"Writing desktop file to: ($desktop_file_path)"
-    echo $desktop_file_content | SUDO > $desktop_file_path
+    echo $desktop_file_content | SUDO tee $desktop_file_path
     SUDO chmod 644 $desktop_file_path
 
     
