@@ -30,6 +30,10 @@ export def configure_alacritty [] {
     SUDO cp $alacritty_bin $alacritty_dest
     log_debug "System binary installation completed successfully."
 
+    # Make the binary executable
+    SUDO chmod 755 $"($alacritty_dest)/alacritty"
+    log_debug "Alacritty binary permissions set successfully."
+
     # User-level configuration
     log_info "Setting up user alacritty configuration..."
     
