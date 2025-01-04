@@ -212,7 +212,7 @@ export def configure_labwc_auto_launch [] {
     # Create the config directory if it doesn't exist
     if not ($config_dir | path exists) {
         log_debug $"Creating directory: ($config_dir)"
-        SUDO mkdir -p $config_dir
+        mkdir $config_dir
     }
     
     # Define the autostart content
@@ -255,8 +255,7 @@ mechanix-keyboard -s /etc/mechanix/shell/keyboard/settings.yml &"
     # Configure autostart file
     if not ($autostart_file | path exists) {
         log_debug $"Creating autostart file: ($autostart_file)"
-        echo $autostart_content | SUDO tee $autostart_file
-        
+        echo $autostart_content | save $autostart_file
         # Set proper permissions
         SUDO chmod 644 $autostart_file
     } else {
@@ -266,8 +265,7 @@ mechanix-keyboard -s /etc/mechanix/shell/keyboard/settings.yml &"
     # Configure rc.xml file
     if not ($rc_file | path exists) {
         log_debug $"Creating rc.xml file: ($rc_file)"
-        echo $rc_content | SUDO tee $rc_file
-        
+        echo $rc_content | save $rc_file
         # Set proper permissions
         SUDO chmod 644 $rc_file
     } else {
