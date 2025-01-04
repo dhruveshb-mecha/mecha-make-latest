@@ -102,18 +102,16 @@ export def configure_chromium_preferences [] {
         SUDO rm $desktop_file_path
     }
 
-    let desktop_file_content = '
-    [Desktop Entry]
-    Type=Application
-    TryExec=chromium
-    Exec=sh -c "export DISPLAY=:0 && chromium"
-    Icon=/usr/share/mechanix/shell/launcher/assets/icons/app_drawer/chromium_icon.png
-    Terminal=false
-    Categories=System;
-
-    Name=Chromium
-    GenericName=Chromium
-    Comment=Browser app
+    let desktop_file_content = '[Desktop Entry]
+Type=Application
+TryExec=chromium
+Exec=sh -c "export DISPLAY=:0 && chromium"
+Icon=/usr/share/mechanix/shell/launcher/assets/icons/app_drawer/chromium_icon.png
+Terminal=false
+Categories=System;
+Name=Chromium
+GenericName=Chromium
+Comment=Browser app
     '
 
     # Create desktop entry file

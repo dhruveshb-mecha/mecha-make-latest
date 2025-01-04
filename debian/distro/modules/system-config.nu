@@ -321,7 +321,8 @@ export def configure_mecha_system_pref [] {
         "/usr/share/applications/system-config-printer.desktop",
         "/usr/share/applications/vim.desktop",
         "/usr/share/applications/debian-uxterm.desktop",
-        "/usr/share/applications/debian-xterm.desktop"
+        "/usr/share/applications/debian-xterm.desktop",
+        "/usr/share/applications/mecha-connect.desktop",
     ]
     
 for file in $files_to_remove {
@@ -335,4 +336,45 @@ for file in $files_to_remove {
 }
     
     log_info "System-wide settings configuration completed."
+}
+
+
+export def configure_mecha_connect_desktop_file [] {
+    log_info "Configuring Mecha Connect desktop entry:"
+    let rootfs_dir = $env.ROOTFS_DIR
+    
+    # Create mecha-connect.desktop file
+    let desktop_file_path = $rootfs_dir + "/usr/share/applications/org.mecha.connect.desktop"
+    let desktop_file_dir = $rootfs_dir + "/usr/share/applications"
+    
+    # Remove existing file if it exists
+    if ($desktop_file_path | path exists) {
+        log_debug $"Removing existing desktop file: ($desktop_file_path)"
+        SUDO rm $desktop_file_path
+    }
+    
+    let desktop_file_content = '[Desktop Entry]
+Type=Application
+TryExec=mecha-connect
+Exec=mecha-connect
+Icon=/usr/share/mechanix/shell/launcher/assets/icons/app_drawer/mecha_connect_icon.png
+Terminal=false
+Categories=System;
+
+Name=Connect
+GenericName=Connect
+Comment=Connect app
+    '
+    
+    # Create desktop entry file
+    log_debug $"Writing desktop file to: ($desktop_file_path)"
+    # Create empty file with sudo
+    SUDO touch $desktop_file_path
+    # Write the content
+    echo $desktop_file_content | SUDO tee $desktop_file_path out> /dev/null
+    # Set appropriate permissions
+    SUDO chmod 644 $desktop_file_path
+    log_debug "Desktop entry created successfully."
+    
+    log_info "Mecha Connect desktop configuration completed."
 }

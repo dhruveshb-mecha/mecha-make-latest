@@ -71,26 +71,25 @@ export def configure_alacritty [] {
         SUDO rm $desktop_file_path
     }
 
-    let desktop_file_content = '
-    [Desktop Entry]
-    Type=Application
-    TryExec=alacritty
-    Exec=alacritty
-    Icon=Alacritty
-    Terminal=false
-    Categories=System;TerminalEmulator;
+    let desktop_file_content = '[Desktop Entry]
+Type=Application
+TryExec=alacritty
+Exec=alacritty
+Icon=Alacritty
+Terminal=false
+Categories=System;TerminalEmulator;
 
-    Name=Alacritty
-    GenericName=Terminal
-    Comment=A fast, cross-platform, OpenGL terminal emulator
-    StartupNotify=true
-    StartupWMClass=Alacritty
-    Actions=New;
+Name=Alacritty
+GenericName=Terminal
+Comment=A fast, cross-platform, OpenGL terminal emulator
+StartupNotify=true
+StartupWMClass=Alacritty
+Actions=New;
 
-    [Desktop Action New]
-    Name=New Terminal
-    Exec=alacritty
-    '
+[Desktop Action New]
+Name=New Terminal
+Exec=alacritty
+'
 
     # Create desktop entry file
     log_debug $"Writing desktop file to: ($desktop_file_path)"
