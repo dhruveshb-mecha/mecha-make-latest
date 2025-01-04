@@ -93,8 +93,8 @@ export def configure_chromium_preferences [] {
 
 
     # Create chromium.desktop file
-    let desktop_file_path = "/usr/share/applications/chromium.desktop"
-    let desktop_file_dir = "/usr/share/applications"
+    let desktop_file_path = $rootfs_dir + "/usr/share/applications/chromium.desktop"
+    let desktop_file_dir = $rootfs_dir + "/usr/share/applications"
 
     # Remove existing file if it exists
     if ($desktop_file_path | path exists) {

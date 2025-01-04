@@ -62,8 +62,8 @@ export def configure_alacritty [] {
 
     
     # Create Alacritty.desktop file
-    let desktop_file_path = "/usr/share/applications/Alacritty.desktop"
-    let desktop_file_dir = "/usr/share/applications"
+    let desktop_file_path = $rootfs_dir + "/usr/share/applications/Alacritty.desktop"
+    let desktop_file_dir = $rootfs_dir + "/usr/share/applications"
 
      # Check if desktop entry exists and remove it
     if ($desktop_file_path | path exists) {
@@ -94,10 +94,8 @@ export def configure_alacritty [] {
 
     # Create desktop entry file
     log_debug $"Writing desktop file to: ($desktop_file_path)"
-    # Create empty file with sudo
-    SUDO touch $desktop_file_path
     # Write the content
-    echo $desktop_file_content | SUDO tee $desktop_file_path out> /dev/null
+    echo $desktop_file_content | SUDO tee $desktop_file_path
     # Set appropriate permissions
     SUDO chmod 644 $desktop_file_path
     log_debug "Desktop entry created successfully."

@@ -289,6 +289,14 @@ export def set_config_dir_ownership [] {
     } catch {
      |error| log_error $"Failed to set ownership : ($error)"
     }
+
+    # set permissions to 700
+    try {
+    CHROOT chmod 700 $config_dir
+    log_info "Permissions set successfully."
+    } catch {
+     |error| log_error $"Failed to set permissions : ($error)"
+    }
 }
 
 export def configure_mecha_system_pref [] {
